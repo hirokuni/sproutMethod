@@ -19,6 +19,9 @@ public class TransactionGate {
 			if (!mBundleList.hasEntry(entry)) {
 				//if the entry is not included, then the entry is added to temp list "entriesToAdd".
 				entry.postDate();
+				//This local variable "entriesToAdd" tends to lead other new code into this method "postEntries".
+				//For example, when we need to add some procedure before adding entry, the procedure
+				//is needed to be added this line.
 				entriesToAdd.add(entry);
 			}
 		}
