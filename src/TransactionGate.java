@@ -12,21 +12,24 @@ import java.util.ListIterator;
 public class TransactionGate {
 	private TransactionBundle mBundleList = new TransactionBundle();
 
-	public void postEntries(List entries) {
-		List entriesToAdd = new LinkedList();
-		for (Iterator it = entries.iterator(); it.hasNext();) {
-			Entry entry = (Entry) it.next();
-			if (!mBundleList.hasEntry(entry)) {
-				//if the entry is not included, then the entry is added to temp list "entriesToAdd".
-				entry.postDate();
-				//This local variable "entriesToAdd" tends to lead other new code into this method "postEntries".
-				//For example, when we need to add some procedure before adding entry, the procedure
-				//is needed to be added this line.
-				entriesToAdd.add(entry);
-			}
-		}
+	public TransactionGate(List list) {
+		mBundleList.add(list);
+	}
 
+	// public List uniqueEntries(List entries){
+	// List result = new ArrayList()
+	// }
+
+	public void postEntries(List entries) {
+		List entriesToAdd = uniqueEntries(entries);
+		for (Iterator it = entriesToAdd.iterator(); it.hasNext();) {
+			Entry entry = (Entry) it.next();
+			entry.postDate();
+		}
 		mBundleList.add(entriesToAdd);
+	}
+
+	public void addEntry(Entry entry) {
 
 	}
 
@@ -41,7 +44,7 @@ public class TransactionGate {
 
 			for (Iterator it = mList.iterator(); it.hasNext();) {
 				Entry existingEntry = (Entry) it.next();
-				if (existingEntry.key == entry.key) {
+				if (existingEntry.mkey == entry.mkey) {
 					return true;
 				}
 			}
@@ -50,19 +53,17 @@ public class TransactionGate {
 		}
 	}
 
-	public class Entry {
-		private Date mDate;
-		private int key;
+	public List uniqueEntries(List entries) {
 
-		// e.g. date = ""2008/02/16""
-		public Entry(int key, String date) throws ParseException {
-			DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-			mDate = df.parse(date);
+		List result = new ArrayList();
+		for (Iterator it = entries.iterator(); it.hasNext();) {
+			Entry entry = (Entry) it.next();
+			if (!mBundleList.hasEntry(entry)) {
+				result.add(entry);
+			}
 		}
 
-		public void postDate() {
-			// do some post procedure
-		}
+		return result;
 	}
 
 }
